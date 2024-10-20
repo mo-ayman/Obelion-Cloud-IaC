@@ -62,13 +62,5 @@ resource "azurerm_subnet" "subnet_obelion" {
 #   ]
 # }
 
-resource "azurerm_subnet_network_security_group_association" "subnet-network-sg-association" {
-  subnet_id                 = azurerm_subnet.subnet_obelion.id
-  network_security_group_id = azurerm_network_security_group.network_sg_obelion.id
 
-  depends_on = [
-    azurerm_network_security_group.network_sg_obelion,
-    azurerm_subnet.subnet_obelion
-  ]
-}
 

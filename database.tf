@@ -1,24 +1,24 @@
-resource "azurerm_private_dns_zone" "mysql_private_dns_zone" {
-  name                = "privatelink.mysql.database.azure.com"
-  resource_group_name = azurerm_resource_group.rg_obelion.name
+# resource "azurerm_private_dns_zone" "mysql_private_dns_zone" {
+#   name                = "privatelink.mysql.database.azure.com"
+#   resource_group_name = azurerm_resource_group.rg_obelion.name
 
-  depends_on = [
-    azurerm_resource_group.rg_obelion
-  ]
-}
+#   depends_on = [
+#     azurerm_resource_group.rg_obelion
+#   ]
+# }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "mysql_vnet_link" {
-  name                  = "mysql_vnet_link"
-  resource_group_name   = azurerm_resource_group.rg_obelion.name
-  private_dns_zone_name = azurerm_private_dns_zone.mysql_private_dns_zone.name
-  virtual_network_id    = azurerm_virtual_network.vnet_obelion.id
+# resource "azurerm_private_dns_zone_virtual_network_link" "mysql_vnet_link" {
+#   name                  = "mysql_vnet_link"
+#   resource_group_name   = azurerm_resource_group.rg_obelion.name
+#   private_dns_zone_name = azurerm_private_dns_zone.mysql_private_dns_zone.name
+#   virtual_network_id    = azurerm_virtual_network.vnet_obelion.id
 
-  depends_on = [
-    azurerm_resource_group.rg_obelion,
-    azurerm_private_dns_zone.mysql_private_dns_zone,
-    azurerm_virtual_network.vnet_obelion
-  ]
-}
+#   depends_on = [
+#     azurerm_resource_group.rg_obelion,
+#     azurerm_private_dns_zone.mysql_private_dns_zone,
+#     azurerm_virtual_network.vnet_obelion
+#   ]
+# }
 
 
 resource "azurerm_mysql_flexible_server" "mysql_server" {
@@ -34,7 +34,6 @@ resource "azurerm_mysql_flexible_server" "mysql_server" {
   depends_on = [
     azurerm_resource_group.rg_obelion,
     azurerm_subnet.subnet_obelion,
-    azurerm_private_dns_zone.mysql_private_dns_zone
   ]
 }
 
@@ -74,3 +73,13 @@ resource "azurerm_private_endpoint" "mysql_private_endpoint" {
   ]
 }
 
+resource "azurerm_mysql_flexible_server_configuration" "disable_secure_transport" {
+  name                = "require_secure_transport"
+  resource_group_name = azurerm_resource_group.rg_obelion.name
+  server_name         = azurerm_mysql_flexible_server.mysql_server.name
+  value               = "OFF"  # Disabling secure transport
+
+  depends_on = [
+    azurerm_mysql_flexible_server.mysql_server
+  ]
+}
